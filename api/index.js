@@ -9,7 +9,8 @@ const port = 8000;
 const cors = require("cors");
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 const jwt = require("jsonwebtoken");
@@ -65,6 +66,32 @@ const createToken = (userId) => {
 
   return token;
 };
+
+//get user information
+app.get("/:userId", async (req, res) => {
+  try {
+    // Extract user ID from request parameters
+    const userId = req.params.userId;
+
+    // Find user by ID in the database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send user information as response
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error retrieving user information:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//endpoint update user profile
+app.post("/user/update", (req,res) =>{
+
+})
 
 //endpoint for logging in of that particular user
 app.post("/login", (req, res) => {
@@ -234,6 +261,39 @@ app.post("/messages", upload.single("imageFile"), async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.put('/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const { name, email, image } = req.body;
+
+  try {
+      // Find the user by ID
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Update user data
+      if (name) {
+          user.name = name;
+      }
+      if (email) {
+          user.email = email;
+      }
+      if (image) {
+          user.image = image;
+      }
+
+      // Save the updated user data
+      await user.save();
+
+      res.json({ message: 'User profile updated successfully', user });
+  } catch (error) {
+      console.error('Error updating user profile:', error);
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 
