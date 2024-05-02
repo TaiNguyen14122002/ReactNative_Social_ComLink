@@ -10,6 +10,9 @@ import ChatsScreen from "./screens/ChatsScreen";
 import ChatMessagesScreen from "./screens/ChatMessagesScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "./screens/HomeScreen";
+import ProfileScreen from "./screens/ProfileScreen"
+import EditProfile from "./screens/EditProfile"
+
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -78,6 +81,8 @@ const StackNavigator = () => {
         <Stack.Screen name="Nhắn tin" component={ChatsScreen} />
 
         <Stack.Screen name="Messages" component={ChatMessagesScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

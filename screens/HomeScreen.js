@@ -1,7 +1,7 @@
 import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useLayoutEffect, useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons, Ionic, Feather } from "@expo/vector-icons";
+import { Ionicons, Ionic, Feather, SimpleLineIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { UserType } from "../UserContext";
 import Stories from "./Stories";
@@ -14,8 +14,25 @@ import User from "../components/User";
 const HomeScreen = () => {
     const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
-  const [users, setUsers] = useState([]);
-  const [token, setToken] = useState("");
+  useEffect(() => {
+    const getTokenAndDecode = async () => {
+      try {
+        // Retrieve token from AsyncStorage
+        const token = await AsyncStorage.getItem("authToken");
+
+        // Decode the token to extract userId
+        const decodedToken = jwt_decode(token);
+        const userId = decodedToken.userId;
+        AsyncStorage.setItem("userId", userId);
+        // Set the userId state
+        setUserId(userId);
+      } catch (error) {
+        console.error("Error retrieving token:", error);
+      }
+    };
+    
+    getTokenAndDecode();
+  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -31,6 +48,7 @@ const HomeScreen = () => {
             size={24}
             color="black"
           />
+          <SimpleLineIcons onPress={() => navigation.navigate("Profile")} name="user" size={20} color="black" />
         </View>
       ),
     });

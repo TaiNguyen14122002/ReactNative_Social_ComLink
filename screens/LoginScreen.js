@@ -10,6 +10,8 @@ import React, { useState ,useEffect} from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from 'react-native';
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -44,7 +46,6 @@ const LoginScreen = () => {
         console.log(response);
         const token = response.data.token;
         AsyncStorage.setItem("authToken", token);
-
         navigation.replace("Home");
       })
       .catch((error) => {
