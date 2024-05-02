@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  Phone:{
+    type: Number,
+    required: false,
+  },
   freindRequests: [
     {
       type: mongoose.Schema.Types.ObjectId,

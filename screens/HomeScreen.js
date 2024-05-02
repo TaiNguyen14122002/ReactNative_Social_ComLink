@@ -33,6 +33,7 @@ const HomeScreen = () => {
     
     getTokenAndDecode();
   }, []);
+  console.log("ID", userId);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",

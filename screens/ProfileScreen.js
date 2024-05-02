@@ -37,6 +37,8 @@ const ProfileScreen = () => {
         fetchUserData(); // Call fetchUserData when the component mounts
     }, []); 
 
+    // console.log("ID USER", userData);
+
     // Function to calculate the total number of friends
     const getTotalFriends = () => {
         if (userData && userData.friends) {
@@ -44,6 +46,13 @@ const ProfileScreen = () => {
         }
         return 0;
     };
+
+    const getTotalSentFriendRequest = () => {
+        if(userData && userData.sentFriendRequests){
+            return userData.sentFriendRequests.length;
+        }
+        return 0;
+    }
 
     if (!userData) {
         return <View><Text>Loading...</Text></View>;
@@ -86,7 +95,7 @@ const ProfileScreen = () => {
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>
-                    Post
+                    Bài viết
                 </Text>
             </View>
             <View 
@@ -109,7 +118,7 @@ const ProfileScreen = () => {
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>
-                    Friends
+                    Bạn vè
                 </Text>
             </View>
             <View 
@@ -124,7 +133,8 @@ const ProfileScreen = () => {
                         paddingHorizontal: 10,
                         marginLeft: 10,
                     }}>        
-                    19
+                    {/* {userData.sentFriendRequests ? userData.sentFriendRequests.length : 0} */}
+                    {getTotalSentFriendRequest()}
                 </Text>
                 <Text
                     style={{
@@ -132,7 +142,7 @@ const ProfileScreen = () => {
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>
-                    Following
+                    Đang theo dõi
                 </Text>
             </View>
         </View>
