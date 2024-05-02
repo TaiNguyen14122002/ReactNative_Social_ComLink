@@ -33,6 +33,7 @@ app.listen(port, () => {
 
 const User = require("./models/user");
 const Message = require("./models/message");
+const Post = require("./models/post");
 
 //endpoint for registration of the user
 
@@ -266,7 +267,7 @@ app.post("/messages", upload.single("imageFile"), async (req, res) => {
 
 app.put('/:userId', async (req, res) => {
   const userId = req.params.userId;
-  const { name, email, image } = req.body;
+  const { name, email,Phone, image } = req.body;
 
   try {
       // Find the user by ID
@@ -282,6 +283,9 @@ app.put('/:userId', async (req, res) => {
       }
       if (email) {
           user.email = email;
+      }
+      if(Phone){
+        user.Phone = Phone;
       }
       if (image) {
           user.image = image;
