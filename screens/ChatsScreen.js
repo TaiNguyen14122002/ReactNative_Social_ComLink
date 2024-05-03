@@ -13,7 +13,7 @@ const ChatsScreen = () => {
     const acceptedFriendsList = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.4:8000/accepted-friends/${userId}`
+          `http://10.0.30.157:8000/accepted-friends/${userId}`
         );
         const data = await response.json();
 

@@ -71,7 +71,7 @@ const EditProfile = () => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://192.168.1.4:8000/${userId}`, {
+                const response = await axios.get(`http://10.0.30.157:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },
@@ -94,7 +94,7 @@ const EditProfile = () => {
             const token = await AsyncStorage.getItem('authToken');
             const decodedToken = jwt_decode(token);
             const userId = decodedToken.userId;
-            const response = await axios.put(`http://192.168.1.4:8000/${userId}`, {
+            const response = await axios.put(`http://10.0.30.157:8000/${userId}`, {
                 name,
                 email,
                 Phone,

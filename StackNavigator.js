@@ -74,7 +74,12 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ActivityScreen" component={ActivityScreen} />
+        
+        <Stack.Screen
+          name="ActivityScreen"
+          component={ActivityScreen}
+          options={{ headerShown: true }}
+        />
 
         <Stack.Screen name="Lời mời kết bạn" component={FriendsScreen} />
 
