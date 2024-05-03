@@ -1,3 +1,4 @@
+
 import {
   StyleSheet,
   Text,
@@ -30,6 +31,7 @@ const ChatMessagesScreen = () => {
   const { recepientId } = route.params;
   const [message, setMessage] = useState("");
   const { userId, setUserId } = useContext(UserType);
+  const imagePath = '/Users/NguoiDung/React_Native/ReactNative_Social_ComLink/api/files/1714718490503-120857913-image.jpg';
 
   const scrollViewRef = useRef(null);
 
@@ -56,7 +58,7 @@ const ChatMessagesScreen = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.4:8000/messages/${userId}/${recepientId}`
+        `http://10.0.30.157:8000/messages/${userId}/${recepientId}`
       );
       const data = await response.json();
 
@@ -78,7 +80,7 @@ const ChatMessagesScreen = () => {
     const fetchRecepientData = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.4:8000/user/${recepientId}`
+          `http://10.0.30.157:8000/user/${recepientId}`
         );
 
         const data = await response.json();
@@ -109,7 +111,7 @@ const ChatMessagesScreen = () => {
         formData.append("messageText", message);
       }
 
-      const response = await fetch("http://192.168.1.4:8000/messages", {
+      const response = await fetch("http://10.0.30.157:8000/messages", {
         method: "POST",
         body: formData,
       });
@@ -182,7 +184,7 @@ const ChatMessagesScreen = () => {
 
   const deleteMessages = async (messageIds) => {
     try {
-      const response = await fetch("http://192.168.1.4:8000/deleteMessages", {
+      const response = await fetch("http://10.0.30.157:8000/deleteMessages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -291,10 +293,11 @@ const ChatMessagesScreen = () => {
 
           if (item.messageType === "image") {
             const baseUrl =
-              "/Users/sujananand/Build/messenger-project/api/files/";
+              "/Users/NguoiDung/React_Native/ReactNative_Social_ComLink/api/files/";
             const imageUrl = item.imageUrl;
             const filename = imageUrl.split("/").pop();
             const source = { uri: baseUrl + filename };
+            console.log("taitaitai", source)
             return (
               <Pressable
                 key={index}
@@ -321,6 +324,7 @@ const ChatMessagesScreen = () => {
                 <View>
                   <Image
                     source={source}
+                    // source={require(imagePath)}
                     style={{ width: 200, height: 200, borderRadius: 7 }}
                   />
                   <Text

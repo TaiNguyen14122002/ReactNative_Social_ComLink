@@ -6,11 +6,12 @@ import { UserType } from "../UserContext";
 const UserChat = ({ item }) => {
   const { userId, setUserId } = useContext(UserType);
   const [messages, setMessages] = useState([]);
+  const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.81:8000/messages/${userId}/${item._id}`
+        `http://10.0.30.157:8000/messages/${userId}/${item._id}`
       );
       const data = await response.json();
 
@@ -44,6 +45,33 @@ const UserChat = ({ item }) => {
     const options = { hour: "numeric", minute: "numeric" };
     return new Date(time).toLocaleString("en-US", options);
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+        try {
+            // Retrieve authentication token from AsyncStorage
+            const token = await AsyncStorage.getItem('authToken');
+
+            // Decode the token to extract user ID
+            const decodedToken = jwt_decode(token);
+            const userId = decodedToken.userId;
+
+            // Make a GET request to fetch user data
+            const response = await axios.get(`http://10.0.30.157:8000/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include authentication token in the request headers
+                },
+            });
+
+            // Set the fetched user data in state
+            setUserData(response.data);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    fetchUserData(); // Call fetchUserData when the component mounts
+}, []); 
   return (
     <Pressable
       onPress={() =>
@@ -65,7 +93,7 @@ const UserChat = ({ item }) => {
     >
       <Image
         style={{ width: 50, height: 50, borderRadius: 25, resizeMode: "cover" }}
-        source={{ uri: item?.image }}
+        source={{ uri: `data:image/jpeg;base64,${item?.image}` }}
       />
 
       <View style={{ flex: 1 }}>

@@ -42,6 +42,7 @@ const HomeScreen = () => {
       ),
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <SimpleLineIcons onPress={() => navigation.navigate("ActivityScreen")} name="user" size={20} color="black" />
           <Ionicons onPress={() => navigation.navigate("Nhắn tin")} name="chatbox-ellipses-outline" size={24} color="black" />
           <MaterialIcons
             onPress={() => navigation.navigate("Lời mời kết bạn")}
