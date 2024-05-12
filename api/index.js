@@ -34,6 +34,7 @@ app.listen(port, () => {
 const User = require("./models/user");
 const Message = require("./models/message");
 const Post = require("./models/post");
+const Story = require("./models/story")
 
 //endpoint for registration of the user
 
