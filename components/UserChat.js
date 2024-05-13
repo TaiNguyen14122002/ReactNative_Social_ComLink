@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, Pressable, Image } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useLayoutEffect, useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { UserType } from "../UserContext";
+import { Ionicons, Ionic, Feather, SimpleLineIcons } from "@expo/vector-icons";
 
 const UserChat = ({ item }) => {
   const { userId, setUserId } = useContext(UserType);
@@ -72,6 +73,22 @@ const UserChat = ({ item }) => {
 
     fetchUserData(); // Call fetchUserData when the component mounts
 }, []); 
+
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: "",
+    headerLeft: () => (
+      <Text style={{ fontSize: 16, fontWeight: "bold" }}>ComLink</Text>
+    ),
+    headerRight: () => (
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <SimpleLineIcons onPress={() => navigation.navigate("ActivityScreen")} name="user" size={20} color="black" />
+        <Ionicons onPress={() => navigation.navigate("Nhắn tin")} name="chatbox-ellipses-outline" size={24} color="black" />
+        
+      </View>
+    ),
+  });
+}, []);
   return (
     <Pressable
       onPress={() =>

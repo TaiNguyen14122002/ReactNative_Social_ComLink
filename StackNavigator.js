@@ -12,6 +12,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "./screens/HomeScreen";
 import ProfileScreen from "./screens/ProfileScreen"
 import EditProfile from "./screens/EditProfile"
+import { Ionicons, Ionic, Feather, SimpleLineIcons } from "@expo/vector-icons";
+import VoiceCallScreen from "./screens/VoiceCallScreen";
 
 
 const StackNavigator = () => {
@@ -74,18 +76,32 @@ const StackNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Home" component={HomeScreen} />
-        
+
         <Stack.Screen
           name="ActivityScreen"
           component={ActivityScreen}
-          options={{ headerShown: true }}
+          options={{
+            headerRight: () => (
+              <View style={{ marginRight: 10 }}>
+                <Ionicons name="md-arrow-undo" size={24} color="black" />{/* Thay 'plus' bằng tên icon bạn muốn sử dụng */}
+              </View>
+            ),
+          }}
         />
+        
+        <Stack.Screen name="VoiceCallScreen" component={VoiceCallScreen} />
 
         <Stack.Screen name="Lời mời kết bạn" component={FriendsScreen} />
 
         <Stack.Screen name="Nhắn tin" component={ChatsScreen} />
 
-        <Stack.Screen name="Messages" component={ChatMessagesScreen} />
+        <Stack.Screen name="Messages" component={ChatMessagesScreen} options={{
+          headerRight: () => (
+            <View style={{ marginRight: 10 }}>
+              <Ionicons name="md-arrow-undo" size={24} color="black" />{/* Thay 'plus' bằng tên icon bạn muốn sử dụng */}
+            </View>
+          ),
+        }} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
       </Stack.Navigator>
