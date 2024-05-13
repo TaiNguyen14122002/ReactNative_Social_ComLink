@@ -1,5 +1,6 @@
 {
   "expo": {
+    
     "name": "messenger-project",
     "slug": "messenger-project",
     "version": "1.0.0",
@@ -17,7 +18,8 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "@config-plugins/react-native-webrtc"
     ],
     "assetBundlePatterns": [
       "**/*"
