@@ -2,8 +2,13 @@ import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { UserType } from "../UserContext";
+import jwt_decode from 'jwt-decode';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+
 
 const UserChat = ({ item }) => {
+  console.log("Item: ", item); 
   const { userId, setUserId } = useContext(UserType);
   const [messages, setMessages] = useState([]);
   const [userData, setUserData] = useState(null);
@@ -11,7 +16,7 @@ const UserChat = ({ item }) => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://10.0.30.157:8000/messages/${userId}/${item._id}`
+        `http://192.168.1.31:8000/messages/${userId}/${item._id}`
       );
       const data = await response.json();
 
@@ -45,6 +50,8 @@ const UserChat = ({ item }) => {
     const options = { hour: "numeric", minute: "numeric" };
     return new Date(time).toLocaleString("en-US", options);
   };
+  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -57,7 +64,7 @@ const UserChat = ({ item }) => {
             const userId = decodedToken.userId;
 
             // Make a GET request to fetch user data
-            const response = await axios.get(`http://10.0.30.157:8000/${userId}`, {
+            const response = await axios.get(`http://192.168.1.31:8000/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                 },
@@ -93,7 +100,7 @@ const UserChat = ({ item }) => {
     >
       <Image
         style={{ width: 50, height: 50, borderRadius: 25, resizeMode: "cover" }}
-        source={{ uri: `data:image/jpeg;base64,${item?.image}` }}
+        source={{ uri: item?.image}}
       />
 
       <View style={{ flex: 1 }}>

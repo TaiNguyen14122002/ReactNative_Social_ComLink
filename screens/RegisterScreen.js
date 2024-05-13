@@ -17,7 +17,9 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [image, setImage] = useState("");
   const navigation = useNavigation();
+  
   const handleRegister = () => {
+    setImage("https://firebasestorage.googleapis.com/v0/b/firestore-b426f.appspot.com/o/profile.png?alt=media&token=d3ae9526-4cfc-4777-ad51-91f630b4d1a4");
     const user = {
       name: name,
       email: email,
@@ -27,17 +29,18 @@ const RegisterScreen = () => {
 
     // send a POST  request to the backend API to register the user
     axios
-      .post("http://10.0.30.157:8000/register", user)
+      .post("http://192.168.1.31:8000/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(
           "Registration successful",
           "You have been registered Successfully"
         );
+        setImage("")
         setName("");
         setEmail("");
         setPassword("");
-        setImage("");
+        navigation.navigate("Login");
       })
       .catch((error) => {
         Alert.alert(
@@ -140,19 +143,7 @@ const RegisterScreen = () => {
               Image
             </Text>
 
-            <TextInput
-              value={image}
-              onChangeText={(text) => setImage(text)}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Image"
-            />
+            
           </View>
 
           <Pressable

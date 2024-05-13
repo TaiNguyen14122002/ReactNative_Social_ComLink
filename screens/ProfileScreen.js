@@ -4,9 +4,10 @@ import { UserType } from '../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode'; 
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
+    const isFocused = useIsFocused();
     const navigation = useNavigation();
     const [userData, setUserData] = useState(null);
     
@@ -21,7 +22,7 @@ const ProfileScreen = () => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://10.0.30.157:8000/${userId}`, {
+                const response = await axios.get(`http://192.168.1.31:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },
@@ -35,7 +36,7 @@ const ProfileScreen = () => {
         };
 
         fetchUserData(); // Call fetchUserData when the component mounts
-    }, []); 
+    }, [isFocused]); 
 
     // console.log("ID USER", userData);
 
@@ -70,11 +71,12 @@ const ProfileScreen = () => {
                 style={{
                     height: 60,
                     width: 60,
-                    borderRadius:50,
-                    resizeMode:'contain'
+                    borderRadius: 50,
+                    resizeMode: 'contain'
                 }}
-                source={{ uri: `data:image/jpeg;base64,${userData.image}` }}
+                source={{ uri: userData.image}}
             />
+
             <View 
                 style={{
                     
@@ -91,7 +93,7 @@ const ProfileScreen = () => {
                 </Text>
                 <Text
                     style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>
@@ -114,11 +116,11 @@ const ProfileScreen = () => {
                 </Text>
                 <Text
                     style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>
-                    Bạn vè
+                    Bạn bè
                 </Text>
             </View>
             <View 
@@ -138,7 +140,7 @@ const ProfileScreen = () => {
                 </Text>
                 <Text
                     style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         color: 'grey',
                         paddingHorizontal: 10,
                     }}>

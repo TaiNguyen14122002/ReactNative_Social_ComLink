@@ -3,17 +3,17 @@ const postSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true,
+        required: true,
     },
     image: [
         {
             type: String,
-            require: true,
+            required: true,
         }
     ],
     posttitle: {
         type: String,
-        require: false,
+        required: false,
     },
     liekpost: [
         {

@@ -12,11 +12,9 @@ import { useNavigation } from "@react-navigation/native";
 import defaultImage from '../assets/profile.png';
 
 
-
 const EditProfile = () => {
     const navigation = useNavigation();
     const [selectedImage, setSelectedImage] = useState(null);
-    const [base64Image, setBase64Image] = useState(null);
     const [userData, setUserData] = useState(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -29,6 +27,7 @@ const EditProfile = () => {
             alert('Permission to access media library required!');
             return;
         }
+    
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -36,33 +35,70 @@ const EditProfile = () => {
                 aspect: [1, 1],
                 quality: 1,
             });
-            if (!result.cancelled) {
-                setSelectedImage(result.uri);
-                convertImageToBase64(result.uri);
+            if (result && result.assets && result.assets.length > 0 && result.assets[0].uri) {
+                setSelectedImage(result.assets[0].uri);
+                console.log('Selected image URI:', result.assets[0].uri);
+                // Save the image to the local file system
+                await saveImageToFileSystem(result.assets[0].uri);
+            } else {
+                console.log('Image URI not found in result:', result);
             }
+            
         } catch (error) {
             console.error('Error selecting image:', error);
         }
     };
-
-
-
-    const convertImageToBase64 = async (uri) => {
+    
+    const saveImageToFileSystem = async (uri) => {
         try {
-            // Read the image file from the local file system
-            const fileContent = await FileSystem.readAsStringAsync(uri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-            setBase64Image(fileContent);
-            // Set the base64 image in state
+            console.log('Image URI:', uri);
+            const filename = uri.split('/').pop();
+            const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
+            
+            // Instead of moving the file, upload it directly to the server
+            await uploadImage(uri, filename); // Upload the image to the server
+            
+            console.log('Image saved to:', destinationPath);
+            setImage(uri); // Set the image URI in state
         } catch (error) {
-            console.error('Error converting image to base64:', error);
+            console.error('Error saving image to file system:', error);
+            // Handle the error here
         }
     };
 
+    
+const uploadImage = async (uri, filename) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', {
+            uri: uri,
+            type: 'image/jpeg', // or the appropriate mime type
+            name: filename,
+        });
+
+        const response = await fetch('http://192.168.1.31:8000/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to upload image');
+        }
+
+        console.log('Image uploaded successfully');
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        // Handle the error here
+    }
+};
+    
     useEffect(() => {
         const fetchUserData = async () => {
             try {
+                
                 // Retrieve authentication token from AsyncStorage
                 const token = await AsyncStorage.getItem('authToken');
 
@@ -71,7 +107,7 @@ const EditProfile = () => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://10.0.30.157:8000/${userId}`, {
+                const response = await axios.get(`http://192.168.1.31:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },
@@ -81,6 +117,7 @@ const EditProfile = () => {
                 setUserData(response.data);
                 setName(response.data.name || '');
                 setEmail(response.data.email || '');
+                setImage(response.data.image || null);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -94,23 +131,24 @@ const EditProfile = () => {
             const token = await AsyncStorage.getItem('authToken');
             const decodedToken = jwt_decode(token);
             const userId = decodedToken.userId;
-            const response = await axios.put(`http://10.0.30.157:8000/${userId}`, {
+            const response = await axios.put(`http://192.168.1.31:8000/${userId}`, {
                 name,
                 email,
                 Phone,
-                image: base64Image, // Assuming you want to update the image as well
+                image: image ? image : '', // Use the local filesystem URI of the saved image
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log('Profile updated successfully:', response.data);
+            console.log("Updated");
             navigation.navigate("Profile");
         } catch (error) {
             console.error('Error updating profile:', error);
         }
     };
-
+    
+    
 
     const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
     const today = new Date();
@@ -212,10 +250,8 @@ const EditProfile = () => {
                     }}>
                     <TouchableOpacity onPress={handleSelectImage}>
                         <Image
-                            source={selectedImage ?
-                                { uri: `data:image/jpeg;base64,${base64Image}` } :
-                                (userData && userData.image ? { uri: `data:image/jpeg;base64,${userData.image}` } : defaultImage)
-                            }
+                            source={image ? { uri: image } : defaultImage}
+                            
                             style={{
                                 height: 170,
                                 width: 170,
@@ -224,7 +260,6 @@ const EditProfile = () => {
                                 borderColor: 'black',
                                 resizeMode: 'contain'
                             }}
-
                         />
                         <View
                             style={{
@@ -336,7 +371,9 @@ const EditProfile = () => {
                             borderRadius: 6,
                             alignItems: "center",
                             justifyContent: "center",
-                        }}>
+                        }}
+                        onPress={()=>{navigation.navigate("Login")}}
+                        >
                         <Text
                             style={{
 

@@ -243,6 +243,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+
+
 //endpoint to post Messages and store it in the backend
 app.post("/messages", upload.single("imageFile"), async (req, res) => {
   try {
@@ -265,41 +267,49 @@ app.post("/messages", upload.single("imageFile"), async (req, res) => {
   }
 });
 
+app.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  res.send('File uploaded successfully.');
+});
+
 app.put('/:userId', async (req, res) => {
   const userId = req.params.userId;
-  const { name, email,Phone, image } = req.body;
+  const { name, email, Phone, image } = req.body;
 
   try {
-      // Find the user by ID
-      const user = await User.findById(userId);
+    // Find the user by ID
+    const user = await User.findById(userId);
 
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-      // Update user data
-      if (name) {
-          user.name = name;
-      }
-      if (email) {
-          user.email = email;
-      }
-      if(Phone){
-        user.Phone = Phone;
-      }
-      if (image) {
-          user.image = image;
-      }
+    // Update user data
+    if (name) {
+      user.name = name;
+    }
+    if (email) {
+      user.email = email;
+    }
+    if (Phone) {
+      user.Phone = Phone;
+    }
+    if (image) {
+      user.image = image;
+    }
 
-      // Save the updated user data
-      await user.save();
+    // Save the updated user data
+    await user.save();
 
-      res.json({ message: 'User profile updated successfully', user });
+    res.json({ message: 'User profile updated successfully', user });
   } catch (error) {
-      console.error('Error updating user profile:', error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' })}
+  });
+ 
 
 ///endpoint to get the userDetails to design the chat Room header
 app.get("/user/:userId", async (req, res) => {

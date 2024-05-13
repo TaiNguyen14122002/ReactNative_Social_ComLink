@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 import React, { useContext } from "react";
 import { UserType } from "../UserContext";
 import { useNavigation } from "@react-navigation/native";
+import jwt_decode from 'jwt-decode';
+
 
 const FriendRequest = ({ item, friendRequests, setFriendRequests }) => {
   const { userId, setUserId } = useContext(UserType);
@@ -9,7 +11,7 @@ const FriendRequest = ({ item, friendRequests, setFriendRequests }) => {
   const acceptRequest = async (friendRequestId) => {
     try {
       const response = await fetch(
-        "http://10.0.30.157:8000/friend-request/accept",
+        "http://192.168.1.31:8000/friend-request/accept",
         {
           method: "POST",
           headers: {
@@ -43,7 +45,7 @@ const FriendRequest = ({ item, friendRequests, setFriendRequests }) => {
     >
       <Image
         style={{ width: 50, height: 50, borderRadius: 25 }}
-        source={{ uri: item.image }}
+        source={{ uri: item?.image }}
       />
 
       <Text
