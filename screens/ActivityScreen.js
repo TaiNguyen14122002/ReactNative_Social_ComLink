@@ -44,7 +44,7 @@ const ActivityScreen = () => {
       setToken(token);
 
       axios
-        .get(`http://10.0.30.157:8000/users/${userId}`)
+        .get(`http://192.168.1.28:8000/users/${userId}`)
         .then((response) => {
           setUsers(response.data);
         })
