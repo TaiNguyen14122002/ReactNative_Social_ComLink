@@ -14,6 +14,14 @@ import ProfileScreen from "./screens/ProfileScreen"
 import EditProfile from "./screens/EditProfile"
 
 
+import CallScreen from "./screens/CallScreen";
+import VideoChat from "./screens/VideoChat"
+import RoomScreen from "./screens/RoomScreen";
+import JoinScreen from "./screens/JoinScreen";
+
+
+
+
 
 
 
@@ -91,6 +99,12 @@ const StackNavigator = () => {
         <Stack.Screen name="Messages" component={ChatMessagesScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
+        <Stack.Screen name="VideoChat" component={VideoChat} />
+
+        <Stack.Screen name="CallScreen" component={CallScreen} />
+        <Stack.Screen name="RoomScreen" component={RoomScreen} />
+        <Stack.Screen name="JoinScreen" component={JoinScreen} />
+        
         
         
       </Stack.Navigator>

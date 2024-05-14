@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, Button, View } from 'react-native';
+import { Text, StyleSheet, Button, View, Alert } from 'react-native';
 import { Video } from 'expo-av'; // Import Video component from expo-av
 import { db } from '../components/firebase';
-
+import * as Permissions from 'expo-permissions';
+import { Camera } from 'expo-camera';
 const configuration = {
   iceServers: [
     {
@@ -17,6 +18,7 @@ export default function CallScreen({ setScreen, screens, roomId }) {
   const [remoteStream, setRemoteStream] = useState();
   const [cachedLocalPC, setCachedLocalPC] = useState();
   const [isMuted, setIsMuted] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
 
   useEffect(() => {
     startLocalStream();
@@ -24,11 +26,11 @@ export default function CallScreen({ setScreen, screens, roomId }) {
 
   const startLocalStream = async () => {
     const isFront = true;
-    const { status: audioStatus } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    const { status: cameraStatus } = await Permissions.askAsync(Permissions.CAMERA);
 
-    if (audioStatus !== 'granted' || cameraStatus !== 'granted') {
-      console.error('Permission to access audio or camera was denied');
+    const { status } = await Camera.requestPermissionsAsync(); // Request camera permissions
+
+    if (status !== 'granted') {
+      console.error('Permission to access camera was denied');
       return;
     }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, Button, View } from 'react-native';
-import { Audio, Video } from 'expo-av';
+import { Audio, Video, Camera } from 'expo-av';
 import { db } from '../components/firebase';
 
 const configuration = {
@@ -37,6 +37,7 @@ export default function JoinScreen({ setScreen, screens, roomId }) {
 
   const startLocalStream = async () => {
     const { status } = await Audio.requestPermissionsAsync();
+    // const { status } = await Camera.requestPermissionsAsync();
     if (status !== 'granted') {
       console.error('Permission to access audio is not granted');
       return;
