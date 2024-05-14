@@ -22,7 +22,7 @@ const ProfileScreen = () => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://192.168.1.31:8000/${userId}`, {
+                const response = await axios.get(`http://192.168.1.28:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },

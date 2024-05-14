@@ -14,6 +14,9 @@ import ProfileScreen from "./screens/ProfileScreen"
 import EditProfile from "./screens/EditProfile"
 
 
+
+
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -88,6 +91,8 @@ const StackNavigator = () => {
         <Stack.Screen name="Messages" component={ChatMessagesScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
+        
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

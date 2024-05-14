@@ -76,7 +76,7 @@ const uploadImage = async (uri, filename) => {
             name: filename,
         });
 
-        const response = await fetch('http://192.168.1.31:8000/upload', {
+        const response = await fetch('http://192.168.1.28:8000/upload', {
             method: 'POST',
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -107,7 +107,7 @@ const uploadImage = async (uri, filename) => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://192.168.1.31:8000/${userId}`, {
+                const response = await axios.get(`http://192.168.1.28:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },
@@ -131,7 +131,7 @@ const uploadImage = async (uri, filename) => {
             const token = await AsyncStorage.getItem('authToken');
             const decodedToken = jwt_decode(token);
             const userId = decodedToken.userId;
-            const response = await axios.put(`http://192.168.1.31:8000/${userId}`, {
+            const response = await axios.put(`http://192.168.1.28:8000/${userId}`, {
                 name,
                 email,
                 Phone,

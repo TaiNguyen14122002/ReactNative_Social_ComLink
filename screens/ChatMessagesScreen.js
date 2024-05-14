@@ -9,7 +9,7 @@ import {
   Pressable,
   Image,
 } from "react-native";
-import React, { useState, useContext, useLayoutEffect, useEffect,useRef } from "react";
+import React, { useState, useContext, useLayoutEffect, useEffect, useRef } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -37,16 +37,16 @@ const ChatMessagesScreen = () => {
 
   useEffect(() => {
     scrollToBottom()
-  },[]);
+  }, []);
 
   const scrollToBottom = () => {
-      if(scrollViewRef.current){
-          scrollViewRef.current.scrollToEnd({animated:false})
-      }
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: false })
+    }
   }
 
   const handleContentSizeChange = () => {
-      scrollToBottom();
+    scrollToBottom();
   }
 
   const handleEmojiPress = () => {
@@ -58,7 +58,7 @@ const ChatMessagesScreen = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.31:8000/messages/${userId}/${recepientId}`
+        `http://192.168.1.28:8000/messages/${userId}/${recepientId}`
       );
       const data = await response.json();
 
@@ -80,7 +80,7 @@ const ChatMessagesScreen = () => {
     const fetchRecepientData = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.31:8000/user/${recepientId}`
+          `http://192.168.1.28:8000/user/${recepientId}`
         );
 
         const data = await response.json();
@@ -111,7 +111,7 @@ const ChatMessagesScreen = () => {
         formData.append("messageText", message);
       }
 
-      const response = await fetch("http://192.168.1.31:8000/messages", {
+      const response = await fetch("http://192.168.1.28:8000/messages", {
         method: "POST",
         body: formData,
       });
@@ -148,19 +148,28 @@ const ChatMessagesScreen = () => {
             </View>
           ) : (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                  resizeMode: "cover",
-                }}
-                source={{ uri: recepientData?.image }}
-              />
+              <View style={{ flexDirection: "row", width: "75%", alignItems: "center", gap: 10 }}>
 
-              <Text style={{ marginLeft: 5, fontSize: 15, fontWeight: "bold" }}>
-                {recepientData?.name}
-              </Text>
+                <Image
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    resizeMode: "cover",
+                  }}
+                  source={{ uri: recepientData?.image }}
+                />
+
+                <Text style={{ marginLeft: 5, fontSize: 15, fontWeight: "bold" }}>
+                  {recepientData?.name}
+                </Text>
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <Ionicons onPress={() => navigation.navigate("VideoChat")} name="call" size={24} color="black" />
+                <Ionicons onPress={() => navigation.navigate("VideoChat")} name="videocam" size={24} color="black" />
+              </View>
+
+
             </View>
           )}
         </View>
@@ -184,7 +193,7 @@ const ChatMessagesScreen = () => {
 
   const deleteMessages = async (messageIds) => {
     try {
-      const response = await fetch("http://192.168.1.31:8000/deleteMessages", {
+      const response = await fetch("http://192.168.1.28:8000/deleteMessages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,8 +203,8 @@ const ChatMessagesScreen = () => {
 
       if (response.ok) {
         setSelectedMessages((prevSelectedMessages) =>
-        prevSelectedMessages.filter((id) => !messageIds.includes(id))
-      );
+          prevSelectedMessages.filter((id) => !messageIds.includes(id))
+        );
 
         fetchMessages();
       } else {
@@ -239,7 +248,7 @@ const ChatMessagesScreen = () => {
   };
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: "#F0F0F0" }}>
-      <ScrollView ref={scrollViewRef} contentContainerStyle={{flexGrow:1}} onContentSizeChange={handleContentSizeChange}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1 }} onContentSizeChange={handleContentSizeChange}>
         {messages.map((item, index) => {
           if (item.messageType === "text") {
             const isSelected = selectedMessages.includes(item._id);
@@ -250,21 +259,21 @@ const ChatMessagesScreen = () => {
                 style={[
                   item?.senderId?._id === userId
                     ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
+                      alignSelf: "flex-end",
+                      backgroundColor: "#DCF8C6",
+                      padding: 8,
+                      maxWidth: "60%",
+                      borderRadius: 7,
+                      margin: 10,
+                    }
                     : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
+                      alignSelf: "flex-start",
+                      backgroundColor: "white",
+                      padding: 8,
+                      margin: 10,
+                      borderRadius: 7,
+                      maxWidth: "60%",
+                    },
 
                   isSelected && { width: "100%", backgroundColor: "#F0FFFF" },
                 ]}
@@ -304,21 +313,21 @@ const ChatMessagesScreen = () => {
                 style={[
                   item?.senderId?._id === userId
                     ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
+                      alignSelf: "flex-end",
+                      backgroundColor: "#DCF8C6",
+                      padding: 8,
+                      maxWidth: "60%",
+                      borderRadius: 7,
+                      margin: 10,
+                    }
                     : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
+                      alignSelf: "flex-start",
+                      backgroundColor: "white",
+                      padding: 8,
+                      margin: 10,
+                      borderRadius: 7,
+                      maxWidth: "60%",
+                    },
                 ]}
               >
                 <View>
