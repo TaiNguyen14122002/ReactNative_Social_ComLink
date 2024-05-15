@@ -362,8 +362,8 @@ const uploadImage = async (uri, filename) => {
               
             const imageUrl = item.imageUrl;
             const filename = imageUrl.split('/').pop();
-            const source = { uri: baseUrl + filename};
-            console.log("taitaitai", source.uri)
+            const source = { require: baseUrl + filename};
+            console.log("taitaitai", source)
             return (
               <Pressable
                 key={index}
