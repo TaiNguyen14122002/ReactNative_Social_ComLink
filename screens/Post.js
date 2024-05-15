@@ -94,8 +94,9 @@ const Post = () => {
 
   return (
     <View>
-      {postInfo.map((data, index) => {
-        const [like, setLike] = useState(data.isLiked);
+      {Post.map((data, index) => {
+        // const [like, setLike] = useState(data.isLiked);
+        // const [like, setLike] = useState("");
         return (
           <View
             key={index}
@@ -113,12 +114,12 @@ const Post = () => {
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
-                  source={data.postPersonImage}
+                  // source={data.postPersonImage}
                   style={{ width: 40, height: 40, borderRadius: 100 }}
                 />
                 <View style={{ paddingLeft: 5 }}>
                   <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                    {data.postTitle}
+                    {data.user.name}
                   </Text>
                 </View>
               </View>
@@ -131,7 +132,7 @@ const Post = () => {
                 alignItems: 'center',
               }}>
               <Image
-                source={data.postImage}
+                // source={data.postImage}
                 style={{ width: '100%', height: 400 }}
               />
             </View>
@@ -145,14 +146,15 @@ const Post = () => {
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => setLike(!like)}>
-                  <AntDesign
+                {/* <TouchableOpacity onPress={handleUpdate}> */}
+                  {/* <AntDesign
                     name={like ? 'heart' : 'hearto'}
                     style={{
                       paddingRight: 10,
                       fontSize: 20,
                       color: like ? 'red' : 'black',
                     }}
-                  />
+                  /> */}
                 </TouchableOpacity>
                 <TouchableOpacity>
                   <Ionic
@@ -174,7 +176,7 @@ const Post = () => {
                 paddingVertical: 2,
 
               }}>
-                {like ? data.likes + 1 : data.likes} luợt thích
+                {/* {like ? data.likes + 1 : data.likes} luợt thích */}
               </Text>
               <Text
                 style={{
@@ -182,9 +184,9 @@ const Post = () => {
                   fontSize: 14,
                   paddingVertical: 2,
                 }}>
-                {data.postTitle + " "}
+                {data.user.name + " "}
                 <Text style={{ fontWeight: 400 }}>
-                  {data.info}
+                  {data.posttitle}
                 </Text>
 
 
@@ -196,7 +198,7 @@ const Post = () => {
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Image
-                    source={data.postPersonImage}
+                    // source={data.postPersonImage}
                     style={{
                       width: 25,
                       height: 25,
