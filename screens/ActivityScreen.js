@@ -15,25 +15,25 @@ const ActivityScreen = () => {
   const { userId, setUserId } = useContext(UserType);
   const [users, setUsers] = useState([]);
   const [token, setToken] = useState("");
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: "",
-      headerLeft: () => (
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>ComLink</Text>
-      ),
-      headerRight: () => (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <Ionicons onPress={() => navigation.navigate("Nhắn tin")} name="chatbox-ellipses-outline" size={24} color="black" />
-          <MaterialIcons
-            onPress={() => navigation.navigate("Lời mời kết bạn")}
-            name="people-outline"
-            size={24}
-            color="black"
-          />
-        </View>
-      ),
-    });
-  }, []);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: "",
+  //     headerLeft: () => (
+  //       <Text style={{ fontSize: 16, fontWeight: "bold" }}>ComLink</Text>
+  //     ),
+  //     headerRight: () => (
+  //       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+  //         <Ionicons onPress={() => navigation.navigate("Nhắn tin")} name="chatbox-ellipses-outline" size={24} color="black" />
+  //         <MaterialIcons
+  //           onPress={() => navigation.navigate("Lời mời kết bạn")}
+  //           name="people-outline"
+  //           size={24}
+  //           color="black"
+  //         />
+  //       </View>
+  //     ),
+  //   });
+  // }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {

@@ -1,11 +1,54 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionic from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { UserType } from '../UserContext';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 const Post = () => {
+  const { UserId, setUserId } = useContext(UserType)
+  const [Post, setPost] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.28:8000/Products');
+        const products = response.data;
+        setPost(products);
+      } catch (error) {
+        console.log('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+  console.log("Tai", Post)
+
+  //Cập nhập số lượng lượt like
+  const handleUpdate = async () => {
+    try {
+        const UpdateLike = {
+          UseId: UserId,
+        }
+        const response = await axios.put(`http://192.168.1.28:8000/posts/${postId}`, UpdateLike);
+
+        if (response.status === 200) {
+            Alert.alert('Thông báo', 'Bài viết đã được cập nhật thành công');
+        } else {
+            Alert.alert('Lỗi', 'Lỗi khi cập nhật bài viết');
+        }
+    } catch (error) {
+        console.error('Lỗi khi gửi yêu cầu:', error);
+        Alert.alert('Lỗi', 'Lỗi khi gửi yêu cầu');
+    }
+};
+
   const postInfo = [
     {
       postTitle: 'tai_ngn.02',
@@ -43,6 +86,11 @@ const Post = () => {
       isLiked: false,
     },
   ];
+
+
+  //Đã console.log ra dữ liệu của Post
+  //Chưa chuyển base64 to image để hiển thị
+
 
   return (
     <View>
@@ -109,8 +157,8 @@ const Post = () => {
                 <TouchableOpacity>
                   <Ionic
                     name="chatbubbles-outline"
-                    
-                    style={{ fontSize: 20, paddingRight: 10}}
+
+                    style={{ fontSize: 20, paddingRight: 10 }}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity>
@@ -135,7 +183,7 @@ const Post = () => {
                   paddingVertical: 2,
                 }}>
                 {data.postTitle + " "}
-                <Text style={{fontWeight: 400}}>
+                <Text style={{ fontWeight: 400 }}>
                   {data.info}
                 </Text>
 

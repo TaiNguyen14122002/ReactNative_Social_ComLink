@@ -12,7 +12,7 @@ import axios from "axios";
 import User from "../components/User";
 
 const HomeScreen = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
   useEffect(() => {
     const getTokenAndDecode = async () => {
@@ -30,34 +30,44 @@ const HomeScreen = () => {
         console.error("Error retrieving token:", error);
       }
     };
-    
+
     getTokenAndDecode();
   }, []);
   console.log("ID", userId);
+
+  const [isPressed, setIsPressed] = useState(false); // State để theo dõi trạng thái của icon
+
+  // Hàm để xử lý sự kiện nhấn vào icon và điều hướng đến màn hình "Lời mời kết bạn"
+  const handlePress = () => {
+    navigation.navigate("Lời mời kết bạn");
+    setIsPressed(!isPressed); // Đảo ngược trạng thái của biến isPressed
+    // Thêm bất kỳ xử lý nào khác bạn muốn ở đây
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
       headerLeft: () => (
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>ComLink</Text>
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 10 }}>ComLink</Text>
       ),
       headerRight: () => (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <SimpleLineIcons onPress={() => navigation.navigate("ActivityScreen")} name="user" size={20} color="black" />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginRight: 5 }}>
+          <SimpleLineIcons onPress={() => navigation.navigate("Gợi ý kết bạn")} name="user" size={20} color="black" />
           <Ionicons onPress={() => navigation.navigate("Nhắn tin")} name="chatbox-ellipses-outline" size={24} color="black" />
-          <MaterialIcons
-            onPress={() => navigation.navigate("Lời mời kết bạn")}
-            name="people-outline"
-            size={24}
-            color="black"
+          <Ionicons
+            onPress={handlePress}
+            name={isPressed ? 'notifications-outline' : 'notifications-outline'} // Thay đổi tên icon tùy thuộc vào trạng thái của biến isPressed 
+            size={24} color="black"
+
           />
-          <SimpleLineIcons onPress={() => navigation.navigate("Profile")} name="user" size={20} color="black" />
+
         </View>
       ),
     });
   }, []);
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
-      
+
       <StatusBar
         backgroundColor="white"
         barStyle="dark-content"
@@ -69,10 +79,10 @@ const HomeScreen = () => {
           flexDirection: 'row',
           paddingHorizontal: 15,
           alignItems: 'center',
-          
+
         }}>
         {/* <FontAwesome name="plus-square-o" style={{fontSize: 24}} /> */}
-        
+
         <View style={{ flexDirection: 'row', color: 'white' }}>
           <TouchableOpacity onPress={() => navigation.navigate('Activity')}>
             {/* <Ionic name="heart-outline" style={{ padding: 5, fontSize: 24, color: 'black', fontWeight: 600 }} /> */}

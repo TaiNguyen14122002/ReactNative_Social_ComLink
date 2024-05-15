@@ -35,7 +35,148 @@ const User = require("./models/user");
 const Message = require("./models/message");
 const Post = require("./models/post");
 
-//endpoint for registration of the user
+
+const multer = require("multer");
+
+// Configure multer for handling file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "files/"); // Specify the desired destination folder
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename for the uploaded file
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+
+//API cập nhập số lượng like và lưu user đã like bài viết
+app.put('/posts/:postId', async (req, res) => {
+  const postId = req.params.postId; // Lấy postId từ URL
+  const { UseId } = req.body; // Lấy dữ liệu cần cập nhật từ request body
+
+  try {
+      const post = await Post.findById(postId); // Tìm bài viết theo postId
+      if (!post) {
+          return res.status(404).json({ error: "Bài viết không tồn tại" });
+      }
+
+      // Cập nhật dữ liệu của bài viết
+      if (UseId) post.liekpost = UseId;
+      
+
+      // Lưu lại dữ liệu đã cập nhật vào cơ sở dữ liệu
+      await post.save();
+
+      return res.status(200).json(post); // Trả về bài viết đã được cập nhật
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Lỗi server" });
+  }
+});
+
+// const upload = multer({ storage: storage });
+
+app.get('/Products', async (req, res) => {
+  try {
+    const products = await Post.find().populate('user', 'name email image') // Kết hợp thông tin người đăng (user) và chỉ lấy các trường name, email, image
+    .exec();;
+    
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching productssssss:', error);
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+
+
+
+
+app.post('/upload/post', async (req, res) => {
+    try{
+      const {
+        userId,
+        title,
+        image
+      } = req.body;
+      const user = await User.findById(userId)
+      if(!user){
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const NewPost = new Post({
+        user: userId,
+        image: image,
+        posttitle: title,
+      });
+      await NewPost.save();
+      res.status(200).json({message: "New Post Succes"})
+    }catch(error){
+      console.log("error new post", error);
+      res.status(500).json({message:"error new post"})
+    }
+  // const { use, title, image } = req.body;
+  // const userId = use;
+  // console.log(userId) // Destructure userId directly from req.body
+
+  // try {
+  //   if (!userId) { // Check if userId is provided
+  //     return res.status(400).json({ error: 'User ID is required' });
+  //   }
+
+  //   const post = new Post({ title, image, userId });
+  //   await post.save();
+  //   res.status(201).json({ message: 'Post added successfully', post });
+  // } catch (error) {
+  //   console.error('Error adding post:', error);
+  //   res.status(500).json({ error: 'Failed to add post' });
+  // }
+});
+
+// app.post('/posts', async (req, res) => {
+//   try {
+//     const { user, image, posttitle } = req.body; // Nhận thông tin từ yêu cầu POST
+
+//     // Tạo một bài viết mới
+//     const newPost = new Post({
+//       user,
+//       image,
+//       posttitle,
+//       likepost: [], // Khởi tạo mảng rỗng cho likepost
+//       commentpost: [], // Khởi tạo mảng rỗng cho commentpost
+//       sharepost: [], // Khởi tạo mảng rỗng cho sharepost
+//     });
+
+//     // Lưu bài viết vào cơ sở dữ liệu
+//     await newPost.save();
+
+//     res.status(201).json(newPost);
+//   } catch (error) {
+//     console.error('Error creating post:', error);
+//     res.status(500).json({ message: 'Failed to create post' });
+//   }
+// });
+
+
+
+// app.listen(port, () => {
+//   console.log(`Server is listening at http://localhost:${port}`);
+// });
+
+
+
+
+
+
+
+
+
+
 
 app.post("/register", (req, res) => {
   const { name, email, password, image } = req.body;
@@ -227,21 +368,7 @@ app.get("/accepted-friends/:userId", async (req, res) => {
   }
 });
 
-const multer = require("multer");
 
-// Configure multer for handling file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "files/"); // Specify the desired destination folder
-  },
-  filename: function (req, file, cb) {
-    // Generate a unique filename for the uploaded file
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 
 
@@ -249,6 +376,7 @@ const upload = multer({ storage: storage });
 app.post("/messages", upload.single("imageFile"), async (req, res) => {
   try {
     const { senderId, recepientId, messageType, messageText } = req.body;
+    console.log("id", senderId)
 
     const newMessage = new Message({
       senderId,

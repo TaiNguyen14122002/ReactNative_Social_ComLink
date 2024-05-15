@@ -27,6 +27,7 @@ const ChatMessagesScreen = () => {
   const [recepientData, setRecepientData] = useState();
   const navigation = useNavigation();
   const [selectedImage, setSelectedImage] = useState("");
+  const [image, setImage] = useState('');
   const route = useRoute();
   const { recepientId } = route.params;
   const [message, setMessage] = useState("");
@@ -92,7 +93,73 @@ const ChatMessagesScreen = () => {
 
     fetchRecepientData();
   }, []);
-  const handleSend = async (messageType, imageUri) => {
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log("Clever", result.assets[0].uri);
+    if (result && result.assets && result.assets.length > 0 && result.assets[0].uri) {
+      setSelectedImage(result.assets[0].uri);
+      console.log('Selected image URI:', result.assets[0].uri);
+      // Save the image to the local file system
+      await saveImageToFileSystem(result.assets[0].uri);
+    } else {
+      console.log('Image URI not found in result:', result);
+    }
+  };
+
+
+  const saveImageToFileSystem = async (uri) => {
+    try {
+        console.log('Image URI:', uri);
+        const filename = uri.split('/').pop();
+        const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
+        
+        // Instead of moving the file, upload it directly to the server
+        await uploadImage( uri, filename); // Upload the image to the server
+        await handleSend( "image",uri, filename); // Upload the image to the server
+        
+        console.log('Image saved to:', destinationPath);
+        setImage(uri); // Set the image URI in state
+    } catch (error) {
+        console.error('Error saving image to file system:', error);
+        // Handle the error here
+    }
+};
+const uploadImage = async (uri, filename) => {
+  try {
+      const formData = new FormData();
+      formData.append('image', {
+          uri: uri,
+          type: 'image/jpeg', // or the appropriate mime type
+          name: filename,
+      });
+
+      const response = await fetch('http://192.168.1.28:8000/upload', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+      });
+
+      if (!response.ok) {
+          throw new Error('Failed to upload image');
+      }
+
+      console.log('Image uploaded successfully');
+  } catch (error) {
+      console.error('Error uploading image:', error);
+      // Handle the error here
+  }
+};
+
+  const handleSend = async (messageType, uri, filename) => {
     try {
       const formData = new FormData();
       formData.append("senderId", userId);
@@ -102,8 +169,9 @@ const ChatMessagesScreen = () => {
       if (messageType === "image") {
         formData.append("messageType", "image");
         formData.append("imageFile", {
-          uri: imageUri,
-          name: "image.jpg",
+          uri: uri,
+          // name: "image.jpg",
+          name: filename,
           type: "image/jpeg",
         });
       } else {
@@ -218,19 +286,7 @@ const ChatMessagesScreen = () => {
     const options = { hour: "numeric", minute: "numeric" };
     return new Date(time).toLocaleString("en-US", options);
   };
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
 
-    console.log(result);
-    if (!result.canceled) {
-      handleSend("image", result.uri);
-    }
-  };
   const handleSelectMessage = (message) => {
     //check if the message is already selected
     const isSelected = selectedMessages.includes(message._id);
@@ -303,10 +359,11 @@ const ChatMessagesScreen = () => {
           if (item.messageType === "image") {
             const baseUrl =
               "/Users/NguoiDung/React_Native/ReactNative_Social_ComLink/api/files/";
+              
             const imageUrl = item.imageUrl;
-            const filename = imageUrl.split("/").pop();
-            const source = { uri: baseUrl + filename };
-            console.log("taitaitai", source)
+            const filename = imageUrl.split('/').pop();
+            const source = { uri: baseUrl + filename};
+            console.log("taitaitai", source.uri)
             return (
               <Pressable
                 key={index}

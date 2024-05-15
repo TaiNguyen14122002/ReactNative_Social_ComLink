@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {useNavigation} from '@react-navigation/native';
+import { UserType } from '../UserContext';
 
 const Stories = () => {
   const navigation = useNavigation();
+  const {userId, setUserId} = useContext(UserType)
 
   const storyInfo = [
     {

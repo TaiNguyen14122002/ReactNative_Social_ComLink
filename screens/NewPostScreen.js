@@ -1,99 +1,87 @@
-import React, { useState , useEffect  } from 'react';
-import { View, TextInput, Button, StyleSheet, Image, TouchableOpacity, Text } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, TextInput, Button, StyleSheet, Image, TouchableOpacity, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserType } from "../UserContext";
+import axios, { Axios } from 'axios';
+import * as FileSystem from 'expo-file-system';
 
 const NewPostScreen = () => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
+  const [base64Image, setBase64Image] = useState(null);
+  const { userId, setUserId } = useContext(UserType);
 
-  const [userId, setUserId] = useState(null); // Initialize userId state
+  // const [userId, setUserId] = useState(null); // Initialize userId state
 
-  useEffect(() => {
-    // Fetch userId from AsyncStorage when the component mounts
-    AsyncStorage.getItem('userId')
-      .then((userIdFromStorage) => {
-        setUserId(userIdFromStorage); // Set the userId state
-      })
-      .catch((error) => {
-        console.error('Error retrieving userId from AsyncStorage:', error);
-      });
-  }, []); 
+  // useEffect(() => {
+  //   // Fetch userId from AsyncStorage when the component mounts
+  //   AsyncStorage.getItem('userId')
+  //     .then((userIdFromStorage) => {
+  //       setUserId(userIdFromStorage); // Set the userId state
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error retrieving userId from AsyncStorage:', error);
+  //     });
+  // }, []);
 
   const handleSelectImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-        alert('Permission to access media library required!');
-        return;
+      alert('Permission to access media library required!');
+      return;
     }
 
     try {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (result && result.assets && result.assets.length > 0 && result.assets[0].uri) {
+        setImage(result.assets[0].uri);
+        console.log('Selected image URI:', result.assets[0].uri);
+        // Save the image to the local file system
+        await saveImageToFileSystem(result.assets[0].uri);
+
+
+        const imageData = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+          encoding: FileSystem.EncodingType.Base64,
         });
-        if (result && result.assets && result.assets.length > 0 && result.assets[0].uri) {
-            setImage(result.assets[0].uri);
-            console.log('Selected image URI:', result.assets[0].uri);
-            // Save the image to the local file system
-            await saveImageToFileSystem(result.assets[0].uri);
-        } else {
-            console.log('Image URI not found in result:', result);
-        }
-        
+        setBase64Image(`data:image/jpeg;base64,${imageData}`);
+      } else {
+        console.log('Image URI not found in result:', result);
+      }
+
     } catch (error) {
-        console.error('Error selecting image:', error);
+      console.error('Error selecting image:', error);
     }
   };
+
+  console.log("base64", base64Image)
   const saveImageToFileSystem = async (uri) => {
     try {
-        console.log('Image URI:', uri);
-        const filename = uri.split('/').pop();
-        const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
-        
-        // Instead of moving the file, upload it directly to the server
-        await uploadImage(uri, filename); // Upload the image to the server
-        
-        console.log('Image saved to:', destinationPath);
-        setImage(uri); // Set the image URI in state
+      console.log('Image URI:', uri);
+      const filename = uri.split('/').pop();
+      const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
+
+      // Instead of moving the file, upload it directly to the server
+      // await uploadImage(uri, filename); // Upload the image to the server
+
+      console.log('Image saved to:', destinationPath);
+      setImage(uri); // Set the image URI in state
     } catch (error) {
-        console.error('Error saving image to file system:', error);
-        // Handle the error here
+      console.error('Error saving image to file system:', error);
+      // Handle the error here
     }
-};
+  };
 
 
-const uploadImage = async (uri, filename) => {
-try {
-    const formData = new FormData();
-    formData.append('image', {
-        uri: uri,
-        type: 'image/jpeg', // or the appropriate mime type
-        name: filename,
-    });
 
-    const response = await fetch('http://192.168.1.13:8000/upload', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-    });
+  console.log("Taiid", userId)
 
-    if (!response.ok) {
-        throw new Error('Failed to upload image');
-    }
-
-    console.log('Image uploaded successfully');
-} catch (error) {
-    console.error('Error uploading image:', error);
-    // Handle the error here
-}
-};
-
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     try {
       // Check if the title, image, and userId are not empty
       if (!title.trim()) {
@@ -108,37 +96,27 @@ const handleSubmit = async () => {
         alert('User ID is missing');
         return;
       }
-  
-      // Create a FormData object to send the data
-      const formData = new FormData();
-      formData.append('user', userId);
-      formData.append('posttitle', title);
-      formData.append('image', {
-        uri: image,
-        type: 'image/jpeg', // Adjust the type if necessary
-        name: 'image.jpg',
-      });
-  
-      // Send a POST request to the server
-      const response = await fetch('http://192.168.1.13:8000/upload/post', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to save post');
+
+      const NewPost = {
+        userId: userId,
+        title: title,
+        image: base64Image,
       }
-  
-      console.log('Post saved successfully');
-      // Reset form fields after submission if needed
-      setTitle('');
-      setImage(null);
+      const response = await axios.post(`http://192.168.1.28:8000/upload/post`, NewPost);
+      if (response.status == 200) {
+        Alert.alert("Bài viết đã được thêm");
+        console.log("new post success", response.data);
+        setTitle('');
+        setImage('');
+      } else {
+        console.log("error creating new post", response.data);
+      }
     } catch (error) {
       console.error('Error saving post:', error);
       // Handle the error here
     }
   };
-  
+
 
   return (
     <View style={styles.container}>
@@ -150,7 +128,7 @@ const handleSubmit = async () => {
         numberOfLines={4}
       />
       <TouchableOpacity style={[styles.button, { backgroundColor: '#ff6600' }]} onPress={handleSelectImage}>
-        <Text style={styles.buttonText}>Pick Image</Text>
+        <Text style={styles.buttonText}>Thêm hình ảnh</Text>
       </TouchableOpacity>
       {image && (
         <View style={styles.imagePreviewContainer}>
@@ -158,7 +136,7 @@ const handleSubmit = async () => {
         </View>
       )}
       <TouchableOpacity style={[styles.button, { backgroundColor: '#4CAF50', marginTop: 50, }]} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
+        <Text style={styles.buttonText}>Đăng bài</Text>
       </TouchableOpacity>
     </View>
   );
@@ -178,14 +156,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
     borderRadius: 5,
-    marginTop:20,
+    marginTop: 20,
   },
   imagePreviewContainer: {
     width: '100%',
-    height:300,  
+    height: 300,
     borderColor: 'gray',
     overflow: 'hidden',
-    marginTop:20,
+    marginTop: 20,
   },
   fullImage: {
     width: '100%',
