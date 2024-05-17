@@ -54,10 +54,52 @@ const upload = multer({ storage: storage });
 
 
 
+
+
+// Define endpoint to handle toggling post likes
+// app.post('/posts/:postId/like', async (req, res) => {
+//   try {
+//       // Extract the user ID from the request (assuming it's stored in req.user)
+//       const userId = req.user._id; // Adjust this according to your authentication method
+      
+//       // Find the post by its ID
+//       const post = await Post.findById(req.params.postId);
+      
+//       // Check if the post exists
+//       if (!post) {
+//           return res.status(404).json({ message: 'Post not found' });
+//       }
+      
+//       // Check if the user has already liked the post
+//       const index = post.liekpost.indexOf(userId);
+//       if (index !== -1) {
+//           // User has already liked the post, so remove their ID from the array
+//           post.liekpost.splice(index, 1);
+//       } else {
+//           // User has not liked the post, so add their ID to the array
+//           post.liekpost.push(userId);
+//       }
+      
+//       // Save the updated post
+//       await post.save();
+      
+//       // Send a success response
+//       res.status(200).json({ message: 'Post like toggled successfully' });
+//   } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
+
+
 //API cập nhập số lượng like và lưu user đã like bài viết
-app.put('/posts/:postId', async (req, res) => {
+app.put('/posts/:postId/user/:userId', async (req, res) => {
   const postId = req.params.postId; // Lấy postId từ URL
-  const { UseId } = req.body; // Lấy dữ liệu cần cập nhật từ request body
+  
+  const userId = req.params.userId;
+  console.log("postid", postId)
+  console.log("userid", userId)
 
   try {
       const post = await Post.findById(postId); // Tìm bài viết theo postId
@@ -66,9 +108,38 @@ app.put('/posts/:postId', async (req, res) => {
       }
 
       // Cập nhật dữ liệu của bài viết
-      if (UseId) post.liekpost = UseId;
+      if (userId) post.liekpost = userId;
       
 
+      // Lưu lại dữ liệu đã cập nhật vào cơ sở dữ liệu
+      await post.save();
+
+      return res.status(200).json(post); // Trả về bài viết đã được cập nhật
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Lỗi server" });
+  }
+});
+
+//API cập nhập comment vài viết
+app.put('comments/:postId/user/:userId', async (req, res) => {
+  const postId = req.params.postId; // Lấy postId từ URL
+  // const { comment, } = req.body;
+  
+  const userId = req.params.userId;
+  console.log("postid", postId)
+  console.log("userid", userId)
+  
+
+  try {
+      const post = await Post.findById(postId); // Tìm bài viết theo postId
+      const { comment } = req.body;
+      console.log("comment", comment)
+      if (!post) {
+          return res.status(404).json({ error: "Bài viết không tồn tại" });
+      }
+
+      if(comment) post.commentpost = comment;
       // Lưu lại dữ liệu đã cập nhật vào cơ sở dữ liệu
       await post.save();
 

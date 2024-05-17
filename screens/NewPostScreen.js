@@ -102,7 +102,7 @@ const NewPostScreen = () => {
         title: title,
         image: base64Image,
       }
-      const response = await axios.post(`http://192.168.1.28:8000/upload/post`, NewPost);
+      const response = await axios.post(`http://192.168.137.57:8000/upload/post`, NewPost);
       if (response.status == 200) {
         Alert.alert("Bài viết đã được thêm");
         console.log("new post success", response.data);

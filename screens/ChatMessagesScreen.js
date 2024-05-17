@@ -59,7 +59,7 @@ const ChatMessagesScreen = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://192.168.1.28:8000/messages/${userId}/${recepientId}`
+        `http://192.168.137.57:8000/messages/${userId}/${recepientId}`
       );
       const data = await response.json();
 
@@ -81,7 +81,7 @@ const ChatMessagesScreen = () => {
     const fetchRecepientData = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.28:8000/user/${recepientId}`
+          `http://192.168.137.57:8000/user/${recepientId}`
         );
 
         const data = await response.json();
@@ -118,11 +118,11 @@ const ChatMessagesScreen = () => {
     try {
         console.log('Image URI:', uri);
         const filename = uri.split('/').pop();
-        const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
+        const destinationPath = `/Users/NguoiDung/React_Native/ReactNative_Social_ComLink/api/files/${filename}`;
         
         // Instead of moving the file, upload it directly to the server
-        await uploadImage( uri, filename); // Upload the image to the server
-        await handleSend( "image",uri, filename); // Upload the image to the server
+        await uploadImage( uri, destinationPath); // Upload the image to the server
+        await handleSend( "image",uri, destinationPath); // Upload the image to the server
         
         console.log('Image saved to:', destinationPath);
         setImage(uri); // Set the image URI in state
@@ -140,7 +140,7 @@ const uploadImage = async (uri, filename) => {
           name: filename,
       });
 
-      const response = await fetch('http://192.168.1.28:8000/upload', {
+      const response = await fetch('http://192.168.137.57:8000/upload', {
           method: 'POST',
           headers: {
               'Content-Type': 'multipart/form-data',
@@ -179,7 +179,7 @@ const uploadImage = async (uri, filename) => {
         formData.append("messageText", message);
       }
 
-      const response = await fetch("http://192.168.1.28:8000/messages", {
+      const response = await fetch("http://192.168.137.57:8000/messages", {
         method: "POST",
         body: formData,
       });
@@ -225,7 +225,7 @@ const uploadImage = async (uri, filename) => {
                     borderRadius: 15,
                     resizeMode: "cover",
                   }}
-                  source={{ uri: recepientData?.image }}
+                  source={{ uri: `${recepientData?.image}` }}
                 />
 
                 <Text style={{ marginLeft: 5, fontSize: 15, fontWeight: "bold" }}>
@@ -261,7 +261,7 @@ const uploadImage = async (uri, filename) => {
 
   const deleteMessages = async (messageIds) => {
     try {
-      const response = await fetch("http://192.168.1.28:8000/deleteMessages", {
+      const response = await fetch("http://192.168.137.57:8000/deleteMessages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

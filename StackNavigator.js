@@ -22,6 +22,7 @@ import JoinScreen from "./screens/JoinScreen";
 
 import NewPostScreen from "./screens/NewPostScreen"
 import { focusProps } from "react-native-web/dist/cjs/modules/forwardedProps";
+import Status from "./screens/Status";
 
 
 
@@ -123,6 +124,7 @@ const StackNavigator = () => {
         <Stack.Screen name="CallScreen" component={CallScreen} />
         <Stack.Screen name="RoomScreen" component={RoomScreen} />
         <Stack.Screen name="JoinScreen" component={JoinScreen} />
+        <Stack.Screen name="Status" component={Status} options={{ headerShown: false }}/>
 
 
 

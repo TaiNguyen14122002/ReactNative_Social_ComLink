@@ -20,6 +20,9 @@ const EditProfile = () => {
     const [email, setEmail] = useState('');
     const [Phone, setPhone] = useState('');
     const [image, setImage] = useState('');
+    const [base64Image, setBase64Image] = useState(null);
+
+    console.log("tttt", base64Image)
 
     const handleSelectImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -27,7 +30,7 @@ const EditProfile = () => {
             alert('Permission to access media library required!');
             return;
         }
-    
+
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -40,24 +43,29 @@ const EditProfile = () => {
                 console.log('Selected image URI:', result.assets[0].uri);
                 // Save the image to the local file system
                 await saveImageToFileSystem(result.assets[0].uri);
+
+                const imageData = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+                    encoding: FileSystem.EncodingType.Base64,
+                });
+                setBase64Image(`data:image/jpeg;base64,${imageData}`);
             } else {
                 console.log('Image URI not found in result:', result);
             }
-            
+
         } catch (error) {
             console.error('Error selecting image:', error);
         }
     };
-    
+
     const saveImageToFileSystem = async (uri) => {
         try {
             console.log('Image URI:', uri);
             const filename = uri.split('/').pop();
             const destinationPath = `file:///ReactNative_Social_ComLink/api/files/${filename}`;
-            
+
             // Instead of moving the file, upload it directly to the server
             await uploadImage(uri, filename); // Upload the image to the server
-            
+
             console.log('Image saved to:', destinationPath);
             setImage(uri); // Set the image URI in state
         } catch (error) {
@@ -66,39 +74,39 @@ const EditProfile = () => {
         }
     };
 
-    
-const uploadImage = async (uri, filename) => {
-    try {
-        const formData = new FormData();
-        formData.append('image', {
-            uri: uri,
-            type: 'image/jpeg', // or the appropriate mime type
-            name: filename,
-        });
 
-        const response = await fetch('http://192.168.1.28:8000/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            body: formData,
-        });
+    const uploadImage = async (uri, filename) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', {
+                uri: uri,
+                type: 'image/jpeg', // or the appropriate mime type
+                name: filename,
+            });
 
-        if (!response.ok) {
-            throw new Error('Failed to upload image');
+            const response = await fetch('http://192.168.137.57:8000/upload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload image');
+            }
+
+            console.log('Image uploaded successfully');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            // Handle the error here
         }
+    };
 
-        console.log('Image uploaded successfully');
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        // Handle the error here
-    }
-};
-    
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                
+
                 // Retrieve authentication token from AsyncStorage
                 const token = await AsyncStorage.getItem('authToken');
 
@@ -107,7 +115,7 @@ const uploadImage = async (uri, filename) => {
                 const userId = decodedToken.userId;
 
                 // Make a GET request to fetch user data
-                const response = await axios.get(`http://192.168.1.28:8000/${userId}`, {
+                const response = await axios.get(`http://192.168.137.57:8000/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Include authentication token in the request headers
                     },
@@ -124,6 +132,9 @@ const uploadImage = async (uri, filename) => {
         };
 
         fetchUserData(); // Call fetchUserData when the component mounts
+        // const intervalId = setInterval(fetchUserData, 5000); // Cập nhật dữ liệu mỗi 5 giây
+
+        // return () => clearInterval(intervalId);
     }, []);
 
     const updateProfile = async () => {
@@ -131,11 +142,11 @@ const uploadImage = async (uri, filename) => {
             const token = await AsyncStorage.getItem('authToken');
             const decodedToken = jwt_decode(token);
             const userId = decodedToken.userId;
-            const response = await axios.put(`http://192.168.1.28:8000/${userId}`, {
+            const response = await axios.put(`http://192.168.137.57:8000/${userId}`, {
                 name,
                 email,
                 Phone,
-                image: image ? image : '', // Use the local filesystem URI of the saved image
+                image: base64Image ? base64Image : '', // Use the local filesystem URI of the saved image
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -147,8 +158,8 @@ const uploadImage = async (uri, filename) => {
             console.error('Error updating profile:', error);
         }
     };
-    
-    
+
+
 
     const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
     const today = new Date();
@@ -250,8 +261,10 @@ const uploadImage = async (uri, filename) => {
                     }}>
                     <TouchableOpacity onPress={handleSelectImage}>
                         <Image
-                            source={image ? { uri: image } : defaultImage}
-                            
+                            // source={{uri: `${data.image}`}}
+                            // source={image ? { uri: image } : defaultImage}
+                            source={`${base64Image}` ? { uri: `${base64Image}` } : defaultImage}
+
                             style={{
                                 height: 170,
                                 width: 170,
@@ -372,8 +385,8 @@ const uploadImage = async (uri, filename) => {
                             alignItems: "center",
                             justifyContent: "center",
                         }}
-                        onPress={()=>{navigation.navigate("Login")}}
-                        >
+                        onPress={() => { navigation.navigate("Login") }}
+                    >
                         <Text
                             style={{
 
@@ -381,7 +394,7 @@ const uploadImage = async (uri, filename) => {
                                 lineHeight: 22,
                                 color: 'white',
                             }}>
-                            Change Password
+                            Logout
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
